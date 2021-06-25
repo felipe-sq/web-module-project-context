@@ -11,17 +11,34 @@ import ShoppingCart from './components/ShoppingCart';
 
 function App() {
 	const [products] = useState(data);
-	const [cart, setCart] = useState([]);
+	const [cart, setCart] = useState(localStorage.getItem('Cart') ? JSON.parse(localStorage.getItem('Cart')) : []);
+	// refactored for 2nd stretch goal using localStorage
 
 	const addItem = item => {
 		// add the given item to the cart
-		setCart([...cart, item])
+		const addedItem = [...cart, item];
+		setCart(addedItem);
+		localStorage.setItem('Cart', JSON.stringify(addedItem));
+		//refactored for localStorage stretch goal
+	};
+
+	// Stretch Goal for removing item from cart
+	const removeItem = (id) => {
+		const itemID = [...cart.filter(item => item.id !== id)];
+		setCart(itemID);
+		// 2nd stretch goal: using localStorage to persist Cart Items
+
+		if (itemID.length === 0) {
+			localStorage.removeItem('Cart');
+		} else {
+			localStorage.setItem('Cart', JSON.stringify(itemID));
+		}
 	};
 
 	return (
 		<div className="App">
 			<ProductContext.Provider value={{products, addItem}}>
-				<CartContext.Provider value={{cart}}>
+				<CartContext.Provider value={{cart, removeItem}}>
 					<Navigation />
 
 					{/* Routes */}
